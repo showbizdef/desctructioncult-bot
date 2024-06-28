@@ -26,7 +26,7 @@ bot.onText(/\/generate/, (msg) => {
 
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
-    if (msg.text !== '/start' && msg.text !== '/generate    ') {
+    if (msg.text !== '/start' && msg.text !== '/generate') {
         bot.sendMessage(chatId, 'Пропишите команду /generate для получения никнейма.')
     }
 });
