@@ -3,8 +3,8 @@ require('dotenv/config')
 const {BOT_TOKEN} = process.env
 const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(BOT_TOKEN, {polling: true});
-const commands = ['/start', '/generate', '/discord', '/forum']
-const { responses1, responses2}  = require('./responses.js')
+const commands = ['/start', '/generate', '/discord', '/forum', '/ip',]
+const { responses1, responses2, responses3}  = require('./responses.js')
 const chatStates = {};
 
 console.log('Bot has been started...')
@@ -56,6 +56,12 @@ bot.onText(/\/forum/, (msg) => {
     chatStates[chatId] = 'waiting_for_number2';
 })
 
+bot.onText(/\/servers/, (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId, 'Выберите сервер, айпи которого вас интересует');
+    chatStates[chatId] = 'waiting_for_number3';
+})
+
 bot.on('message', (msg) => {
     const chatId  = msg.chat.id;
     const text = msg.text;
@@ -75,19 +81,17 @@ bot.on('message', (msg) => {
     }
 }
 else if (!commands.includes(text) && chatStates[chatId] === 'waiting_for_number2') {
-    // Проверка, является ли текст числом
     if (/^\d+$/.test(text)) {
       const value = parseInt(text, 10);
 
       if (value >= 1 && value <= 30) {
-        // Проверяем, есть ли ответ для введенного значения
         const response = responses2[value];
         if (response) {
           bot.sendMessage(chatId, response);
         } else {
           bot.sendMessage(chatId, 'Ответ для этого значения не найден.');
         }
-        delete chatStates[chatId]; // Сбрасываем состояние после обработки числа
+        delete chatStates[chatId];
       } else {
         bot.sendMessage(chatId, 'Пожалуйста, выберите значение от 1 до 30.');
       }
@@ -95,8 +99,27 @@ else if (!commands.includes(text) && chatStates[chatId] === 'waiting_for_number2
       bot.sendMessage(chatId, 'Пожалуйста, введите команду или значение от 1 до 30.');
     }
   }
-});
+else if (!commands.includes(text) && chatStates[chatId] === 'waiting_for_number3') {
+    if (/^\d+$/.test(text)) {
+        const value = parseInt(text, 10);
 
+        if (value >= 1 && value <= 30) {
+            const response = responses3[value];
+            if(response) {
+                bot.sendMessage(chatId, response);
+            } else {
+                bot.sendMessage(chatId, 'Ответ для этого значения не найден.');
+            }
+            delete chatStates[chatId]; 
+        } else {
+            bot.sendMessage(chatId, 'Пожалуйста, выберите сервер от 1 до 30.');
+            
+        }
+    } else {
+        bot.sendMessage(chatId, 'Пожалуйста, введите команду или сервер от 1 до 30.');
+    }
+}
+});
 bot.on('polling_error', (error) => {
     console.error('Polling error:', error);
 });
