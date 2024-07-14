@@ -4,15 +4,41 @@ const {BOT_TOKEN} = process.env
 const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(BOT_TOKEN, {polling: true});
 const commands = ['/start', '/generate', '/discord', '/forum', '/ip',]
-const { responses1, responses2, responses3}  = require('./responses.js')
+const { responses1, responses2, responses3, servers}  = require('./responses.js')
 const chatStates = {};
+const requiredChannelId = '@showb1zdef';
 
 console.log('Bot has been started...')
 
 const firstNames = ["Amaterasu", "Sora", "Emperor", "Hiroshi", "Amethyst", "Playada", "Adaptive", "Rebellious", "Yamato", "Dagon", "Katsu", "Saint", "Chrome", "Manera", "Arata", "Phantom", "Mamora", "Shirou", "Infused", "Jeffrey", "Shadow", "Neri", "Nik"];
 const lastNames = ["Edge", "Tatsuki", "Cartier", "Explorer", "Blacksimens", "Cult", "Castle", "Bennett", "Cho", "Northside", "Eternal", "Devilside", "Destruction", "Murasaki", "Violence", "Recovery", "Armano", "Takeda", "Soyama", "Hellwalker"];
 
-
+async function isUserSubscribed(userId) {
+    try {
+      const chatMember = await bot.getChatMember(requiredChannelId, userId);
+      return ['member', 'administrator', 'creator'].includes(chatMember.status);
+    } catch (error) {
+      if (error.response && error.response.statusCode === 400) {
+        console.error('Ошибка 400: неверный user_id');
+      } else {
+        console.error('Ошибка при проверке подписки пользователя:', error);
+      }
+      return false;
+    }
+  }
+  
+  async function handleCommand(msg, callback) {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
+  
+    if (await isUserSubscribed(userId)) {
+      callback(msg);
+    } else {
+      bot.sendMessage(chatId, `Вы должны быть подписаны на канал ${requiredChannelId} для использования этого бота.`);
+    }
+  }
+  
+  
 function generateNickname() {
     const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];
@@ -29,42 +55,43 @@ function generatePassword(length) {
     return password;
 }
 
-bot.onText(/\/start/, (msg) => {
-    bot.sendMessage(msg.chat.id, "Welcome! Send /generate to get a nickname.");
-});
+bot.onText(/\/start/, (msg) => handleCommand(msg, (msg) => {
+    bot.sendMessage(msg.chat.id, "👋 Приветствую, вы успешно подписаны на канал разработчика @showb1zdef для отслеживания обновлений, фиксов багов и прочих новостей о боте. Теперь вы сможете полноценно использовать нашего бота.");
+}));
 
-bot.onText(/\/generate/, (msg) => {
+bot.onText(/\/generate/, (msg) => handleCommand(msg, (msg) => {
     const nickname = generateNickname();
-    bot.sendMessage(msg.chat.id, `Ваш никнейм для аризоні єрпє: ${nickname}`);
-});
+    bot.sendMessage(msg.chat.id, `🤖 Ваш никнейм: ${nickname}`);
+}));
 
-bot.onText(/\/password/, (msg) => {
+bot.onText(/\/password/, (msg) => handleCommand(msg, (msg) => {
     const passwordLength = 12;
     const password = generatePassword(passwordLength);
-    bot.sendMessage(msg.chat.id, `Ваш пароль на любий сервіс, мені похуй: ${password}`);
-});
+    bot.sendMessage(msg.chat.id, `🔐 Ваш пароль для любого сервиса, подойдёт и для аризоны: ${password}`);
+}));
 
-bot.onText(/\/discord/, (msg) => {
+bot.onText(/\/discord/, (msg) => handleCommand(msg, (msg) => {
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Выберите сервер, который вас интересует (Их всего 30).');
+    bot.sendMessage(chatId, '🎭 Выберите сервер, который вас интересует (Их всего 30).');
     chatStates[chatId] = 'waiting_for_number1';
-})
+}));
 
-bot.onText(/\/forum/, (msg) => {
+bot.onText(/\/forum/, (msg) => handleCommand(msg, (msg) => {
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Выберите сервер, форум которого вас интересует (Их всего 30).');
+    bot.sendMessage(chatId, '🎭 Выберите сервер, форум которого вас интересует (Их всего 30).');
     chatStates[chatId] = 'waiting_for_number2';
-})
+}));
 
-bot.onText(/\/servers/, (msg) => {
+bot.onText(/\/servers/, (msg) => handleCommand(msg, (msg) => {
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Выберите сервер, айпи которого вас интересует');
+    bot.sendMessage(chatId, '🎭 Выберите сервер, айпи которого вас интересует');
     chatStates[chatId] = 'waiting_for_number3';
-})
+}));
 
 bot.on('message', (msg) => {
     const chatId  = msg.chat.id;
     const text = msg.text;
+    const userId = msg.from.id
 
     if(!commands.includes(text) && chatStates[chatId] === 'waiting_for_number1') {
 
@@ -76,7 +103,7 @@ bot.on('message', (msg) => {
                 bot.sendMessage(chatId, response);
                 delete chatStates[chatId];
             } else {
-                bot.sendMessage(chatId, 'Пожалуйста, выберите сервер от 1 до 30, а не ебучий бонусник.')
+                bot.sendMessage(chatId, '😩 Пожалуйста, выберите сервер от 1 до 30, с другой нумерацией пока что не существует.')
             }
     }
 }
@@ -107,10 +134,10 @@ else if (!commands.includes(text) && chatStates[chatId] === 'waiting_for_number3
             const response = responses3[value];
             if(response) {
                 bot.sendMessage(chatId, response);
+                delete chatStates[chatId];
             } else {
                 bot.sendMessage(chatId, 'Ответ для этого значения не найден.');
             }
-            delete chatStates[chatId]; 
         } else {
             bot.sendMessage(chatId, 'Пожалуйста, выберите сервер от 1 до 30.');
             
