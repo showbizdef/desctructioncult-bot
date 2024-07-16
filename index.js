@@ -4,14 +4,14 @@ const {BOT_TOKEN} = process.env
 const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(BOT_TOKEN, {polling: true});
 const commands = ['/start', '/generate', '/discord', '/forum', '/ip',]
-const { responses1, responses2, responses3, servers}  = require('./responses.js')
 const chatStates = {};
 const requiredChannelId = '@showb1zdef';
+const { responses1, responses2, responses3, servers } = require('./responses.js');
 
 console.log('Bot has been started...')
 
-const firstNames = ["Amaterasu", "Sora", "Emperor", "Hiroshi", "Amethyst", "Playada", "Adaptive", "Rebellious", "Yamato", "Dagon", "Katsu", "Saint", "Chrome", "Manera", "Arata", "Phantom", "Mamora", "Shirou", "Infused", "Jeffrey", "Shadow", "Neri", "Nik"];
-const lastNames = ["Edge", "Tatsuki", "Cartier", "Explorer", "Blacksimens", "Cult", "Castle", "Bennett", "Cho", "Northside", "Eternal", "Devilside", "Destruction", "Murasaki", "Violence", "Recovery", "Armano", "Takeda", "Soyama", "Hellwalker"];
+const firstNames = ["Amaterasu", "Sora", "Emperor", "Hiroshi", "Amethyst", "Playada", "Adaptive", "Rebellious", "Yamato", "Dagon", "Katsu", "Saint", "Chrome", "Manera", "Arata", "Phantom", "Mamora", "Shirou", "Infused", "Jeffrey", "Shadow", "Neri", "Nik", "Kizaru", "Ernesto", "Richard", "Sergio", "Alvaro", "Leonardo", "Marco", "Katana", "Cristopher", "River", "Salvatore", "Kelly", "Britney", "Alessandro", "Francesco", "Ichigo", "Lucas", "Amalion", "Kichiro", "Martin", "Chase", "Lancelot", "James", "Taddeo", "Titled"];
+const lastNames = ["Edge", "Tatsuki", "Cartier", "Explorer", "Blacksimens", "Cult", "Castle", "Bennett", "Cho", "Northside", "Eternal", "Devilside", "Destruction", "Murasaki", "Violence", "Recovery", "Armano", "Takeda", "Soyama", "Hellwalker", "Skywalker", "Wayne", "Hennessy", "Columb", "Laurent", "Fearless", "Williams", "Murphy", "Hayashi", "Nakata", "Cardinal", "Agressive", "Rose", "Quinfrize", ""];
 
 async function isUserSubscribed(userId) {
     try {
@@ -56,97 +56,104 @@ function generatePassword(length) {
 }
 
 bot.onText(/\/start/, (msg) => handleCommand(msg, (msg) => {
-    bot.sendMessage(msg.chat.id, "👋 Приветствую, вы успешно подписаны на канал разработчика @showb1zdef для отслеживания обновлений, фиксов багов и прочих новостей о боте. Теперь вы сможете полноценно использовать нашего бота.");
-}));
-
-bot.onText(/\/generate/, (msg) => handleCommand(msg, (msg) => {
-    const nickname = generateNickname();
-    bot.sendMessage(msg.chat.id, `🤖 Ваш никнейм: ${nickname}`);
-}));
-
-bot.onText(/\/password/, (msg) => handleCommand(msg, (msg) => {
-    const passwordLength = 12;
-    const password = generatePassword(passwordLength);
-    bot.sendMessage(msg.chat.id, `🔐 Ваш пароль для любого сервиса, подойдёт и для аризоны: ${password}`);
-}));
-
-bot.onText(/\/discord/, (msg) => handleCommand(msg, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, '🎭 Выберите сервер, который вас интересует (Их всего 30).');
-    chatStates[chatId] = 'waiting_for_number1';
-}));
-
-bot.onText(/\/forum/, (msg) => handleCommand(msg, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, '🎭 Выберите сервер, форум которого вас интересует (Их всего 30).');
-    chatStates[chatId] = 'waiting_for_number2';
-}));
-
-bot.onText(/\/servers/, (msg) => handleCommand(msg, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, '🎭 Выберите сервер, айпи которого вас интересует');
-    chatStates[chatId] = 'waiting_for_number3';
+  bot.sendMessage(msg.chat.id, "👋 Приветствую, вы успешно подписаны на канал разработчика @showb1zdef для отслеживания обновлений, фиксов багов и прочих новостей о боте. Теперь вы сможете полноценно использовать нашего бота.", {
+      reply_markup: {
+          keyboard: [
+              [{ text: '🛠 Сгенерировать никнейм' }],
+              [{ text: '🔐 Сгенерировать пароль' }],
+              [{ text: '📡 Дискорд сервер' }],
+              [{ text: '📃 Форум сервер' }],
+              [{ text: '🖥 Серверы' }]
+          ],
+          resize_keyboard: true
+      }
+  });
 }));
 
 bot.on('message', (msg) => {
-    const chatId  = msg.chat.id;
-    const text = msg.text;
-    const userId = msg.from.id
+  const chatId = msg.chat.id;
+  const text = msg.text;
 
-    if(!commands.includes(text) && chatStates[chatId] === 'waiting_for_number1') {
-
-        if(/^\d+$/.test(text)) {
-            const value = parseInt(text, 10);
-    
-            if (value >= 1 && value <= 30) {
-                const response = responses1[value];
-                bot.sendMessage(chatId, response);
-                delete chatStates[chatId];
-            } else {
-                bot.sendMessage(chatId, '😩 Пожалуйста, выберите сервер от 1 до 30, с другой нумерацией пока что не существует.')
-            }
-    }
-}
-else if (!commands.includes(text) && chatStates[chatId] === 'waiting_for_number2') {
-    if (/^\d+$/.test(text)) {
-      const value = parseInt(text, 10);
-
-      if (value >= 1 && value <= 30) {
-        const response = responses2[value];
-        if (response) {
-          bot.sendMessage(chatId, response);
-        } else {
-          bot.sendMessage(chatId, 'Ответ для этого значения не найден.');
-        }
-        delete chatStates[chatId];
-      } else {
-        bot.sendMessage(chatId, 'Пожалуйста, выберите значение от 1 до 30.');
-      }
-    } else {
-      bot.sendMessage(chatId, 'Пожалуйста, введите команду или значение от 1 до 30.');
-    }
+  if (text === '🛠 Сгенерировать никнейм') {
+      const nickname = generateNickname();
+      bot.sendMessage(chatId, `🤖 Ваш никнейм: ${nickname}`);
+  } else if (text === '🔐 Сгенерировать пароль') {
+      const passwordLength = 12;
+      const password = generatePassword(passwordLength);
+      bot.sendMessage(chatId, `🔐 Ваш пароль для любого сервиса, подойдёт и для аризоны: ${password}`);
+  } else if (text === '📡 Дискорд сервер') {
+      bot.sendMessage(chatId, '🎭 Выберите сервер, который вас интересует (Их всего 30).', {
+          reply_markup: {
+              keyboard: generateServerButtons(30),
+              resize_keyboard: true
+          }
+      });
+      chatStates[chatId] = 'waiting_for_number1';
+  } else if (text === '📃 Раздел форума') {
+      bot.sendMessage(chatId, '🎭 Выберите сервер, форум которого вас интересует (Их всего 30).', {
+          reply_markup: {
+              keyboard: generateServerButtons(30),
+              resize_keyboard: true
+          }
+      });
+      chatStates[chatId] = 'waiting_for_number2';
+  } else if (text === '🖥 Айпи серверов') {
+      bot.sendMessage(chatId, '🎭 Выберите сервер, айпи которого вас интересует', {
+          reply_markup: {
+              keyboard: generateServerButtons(30),
+              resize_keyboard: true
+          }
+      });
+      chatStates[chatId] = 'waiting_for_number3';
+  } else if (!commands.includes(text)) {
+      handleServerResponse(chatId, text);
   }
-else if (!commands.includes(text) && chatStates[chatId] === 'waiting_for_number3') {
-    if (/^\d+$/.test(text)) {
-        const value = parseInt(text, 10);
-
-        if (value >= 1 && value <= 30) {
-            const response = responses3[value];
-            if(response) {
-                bot.sendMessage(chatId, response);
-                delete chatStates[chatId];
-            } else {
-                bot.sendMessage(chatId, 'Ответ для этого значения не найден.');
-            }
-        } else {
-            bot.sendMessage(chatId, 'Пожалуйста, выберите сервер от 1 до 30.');
-            
-        }
-    } else {
-        bot.sendMessage(chatId, 'Пожалуйста, введите команду или сервер от 1 до 30.');
-    }
-}
 });
+
+function generateServerButtons(count) {
+  const buttons = [];
+  for (let i = 1; i <= count; i++) {
+      buttons.push([{ text: `${i}` }]);
+  }
+  return buttons;
+}
+
+function handleServerResponse(chatId, text) {
+  if (/^\d+$/.test(text)) {
+      const value = parseInt(text, 10);
+      let response;
+
+      if (chatStates[chatId] === 'waiting_for_number1') {
+          response = responses1[value];
+      } else if (chatStates[chatId] === 'waiting_for_number2') {
+          response = responses2[value];
+      } else if (chatStates[chatId] === 'waiting_for_number3') {
+          response = responses3[value];
+      }
+
+      if (response && value >= 1 && value <= 30) {
+          bot.sendMessage(chatId, response);
+          delete chatStates[chatId];
+          bot.sendMessage(chatId, 'Что бы вы хотели сделать дальше?', {
+              reply_markup: {
+                  keyboard: [
+                      [{ text: '🛠 Сгенерировать никнейм' }],
+                      [{ text: '🔐 Сгенерировать пароль' }],
+                      [{ text: '📡 Дискорд сервер' }],
+                      [{ text: '📃 Раздел форума' }],
+                      [{ text: '🖥 Айпи серверов' }]
+                  ],
+                  resize_keyboard: true
+              }
+          });
+      } else {
+          bot.sendMessage(chatId, 'Пожалуйста, выберите значение от 1 до 30.');
+      }
+  } else {
+      bot.sendMessage(chatId, 'Пожалуйста, введите значение от 1 до 30.');
+  }
+}
+
 bot.on('polling_error', (error) => {
-    console.error('Polling error:', error);
+  console.error('Polling error:', error);
 });
