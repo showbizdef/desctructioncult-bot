@@ -5,8 +5,8 @@ const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(BOT_TOKEN, {polling: true});
 const commands = ['/start', '/generate', '/discord', '/forum', '/ip',]
 const chatStates = {};
-const requiredChannelId = '@showb1zdef';
-const { responses1, responses2, responses3, servers } = require('./responses.js');
+const requiredChannelId = '@princeofscalxq';
+const { responses1, responses2, responses3, responses4 } = require('./responses.js');
 
 console.log('Bot has been started...')
 
@@ -56,14 +56,15 @@ function generatePassword(length) {
 }
 
 bot.onText(/\/start/, (msg) => handleCommand(msg, (msg) => {
-  bot.sendMessage(msg.chat.id, "👋 Приветствую, вы успешно подписаны на канал разработчика @showb1zdef для отслеживания обновлений, фиксов багов и прочих новостей о боте. Теперь вы сможете полноценно использовать нашего бота.", {
+  bot.sendMessage(msg.chat.id, "👋 Привет, благодарю за подписку на канал моей команды @princeofscalxq для отслеживания обновлений, фиксов багов и прочих новостей о боте. Теперь вы сможете полноценно использовать нашего бота.", {
       reply_markup: {
           keyboard: [
               [{ text: '🛠 Сгенерировать никнейм' }],
               [{ text: '🔐 Сгенерировать пароль' }],
               [{ text: '📡 Дискорд сервер' }],
               [{ text: '📃 Форум сервер' }],
-              [{ text: '🖥 Серверы' }]
+              [{ text: '🖥 Серверы' }],
+              [{ text: '🛡 Администрация сервера'}]
           ],
           resize_keyboard: true
       }
@@ -105,10 +106,17 @@ bot.on('message', (msg) => {
           }
       });
       chatStates[chatId] = 'waiting_for_number3';
-  } else if (!commands.includes(text)) {
+    } else if (text === '🛡 Администрация сервера') {
+        bot.sendMessage(chatId, '🎭 Выберите сервер, список администрации которого вас интересует', {
+            reply_markup: {
+                keyboard: generateServerButtons(30),
+            }
+        });
+        chatStates[chatId] = 'waiting_for_number4';
+    } else if (!commands.includes(text)) {
       handleServerResponse(chatId, text);
-  }
-});
+    }
+ });
 
 function generateServerButtons(count) {
   const buttons = [];
@@ -129,6 +137,8 @@ function handleServerResponse(chatId, text) {
           response = responses2[value];
       } else if (chatStates[chatId] === 'waiting_for_number3') {
           response = responses3[value];
+      } else if(chatStates[chatId] === 'waiting_for_number4') {
+        response = responses4[value];
       }
 
       if (response && value >= 1 && value <= 30) {
@@ -141,7 +151,8 @@ function handleServerResponse(chatId, text) {
                       [{ text: '🔐 Сгенерировать пароль' }],
                       [{ text: '📡 Дискорд сервер' }],
                       [{ text: '📃 Раздел форума' }],
-                      [{ text: '🖥 Айпи серверов' }]
+                      [{ text: '🖥 Айпи серверов' }],
+                      [{ text: '🛡 Администрация сервера'}]
                   ],
                   resize_keyboard: true
               }
