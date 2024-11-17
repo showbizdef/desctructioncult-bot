@@ -29,6 +29,7 @@ const responses1 = {
     28: 'Официальный Discord сервера Christmas [28]: https://discord.gg/arzchristmas',
     29: 'Официальный Discord сервера Mirage [29]: https://discord.gg/4n2ZT4DTVt',
     30: 'Официальный Discord сервера Love [30]: https://discord.com/invite/T4kH3b6DxP',
+    31: 'Официальный Discord сервера Drake [31]: https://forum.arizona-rp.com/forums/3541/'
 };
 
 const responses2 = {
@@ -62,6 +63,7 @@ const responses2 = {
     28: 'Раздел на форуме сервера Christmas [28]: https://forum.arizona-rp.com/forums/3093/',
     29: 'Раздел на форуме сервера Mirage [29]: https://forum.arizona-rp.com/forums/3206/',
     30: 'Раздел на форуме сервера Love [30]: https://forum.arizona-rp.com/forums/3289/',
+    31: 'Раздел на форуме сервера Drake [31]: https://forum.arizona-rp.com/forums/3541/'
 };
 
 const responses3 = {
@@ -95,6 +97,7 @@ const responses3 = {
     28: 'Christmas [28]: 80.66.82.54:7777',
     29: 'Mirage [29]: 80.66.82.39:7777',
     30: 'Love [30]: 80.66.82.33:7777',
+    31: 'Drake [31]: пока что неизвестно :('
 };
 
 const responses4 = {

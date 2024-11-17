@@ -55,68 +55,82 @@ function generatePassword(length) {
     return password;
 }
 
+// Обработка команд
 bot.onText(/\/start/, (msg) => handleCommand(msg, (msg) => {
-  bot.sendMessage(msg.chat.id, "👋 Привет, благодарю за подписку на канал моей команды @princeofscalxq для отслеживания обновлений, фиксов багов и прочих новостей о боте. Теперь вы сможете полноценно использовать нашего бота.", {
-      reply_markup: {
-          keyboard: [
-              [{ text: '🛠 Сгенерировать никнейм' }],
-              [{ text: '🔐 Сгенерировать пароль' }],
-              [{ text: '📡 Дискорд сервер' }],
-              [{ text: '📃 Форум сервер' }],
-              [{ text: '🖥 Серверы' }],
-              [{ text: '🛡 Администрация сервера'}]
-          ],
-          resize_keyboard: true
-      }
-  });
+    bot.sendMessage(msg.chat.id, "👋 Привет, благодарю за подписку на канал моей команды @princeofscalxq для отслеживания обновлений, фиксов багов и прочих новостей о боте. Теперь вы сможете полноценно использовать нашего бота.", {
+        reply_markup: {
+            keyboard: [
+                [{ text: '🛠 Сгенерировать никнейм' }],
+                [{ text: '🔐 Сгенерировать пароль' }],
+                [{ text: '📡 Дискорд сервер' }],
+                [{ text: '📃 Форум сервер' }],
+                [{ text: '🖥 Серверы' }],
+                [{ text: '🛡 Администрация сервера'}]
+            ],
+            resize_keyboard: true
+        }
+    });
 }));
 
-bot.on('message', (msg) => {
-  const chatId = msg.chat.id;
-  const text = msg.text;
+// Обработка сообщений только из личных чатов
+bot.on('message', async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
 
-  if (text === '🛠 Сгенерировать никнейм') {
-      const nickname = generateNickname();
-      bot.sendMessage(chatId, `🤖 Ваш никнейм: ${nickname}`);
-  } else if (text === '🔐 Сгенерировать пароль') {
-      const passwordLength = 12;
-      const password = generatePassword(passwordLength);
-      bot.sendMessage(chatId, `🔐 Ваш пароль для любого сервиса, подойдёт и для аризоны: ${password}`);
-  } else if (text === '📡 Дискорд сервер') {
-      bot.sendMessage(chatId, '🎭 Выберите сервер, который вас интересует (Их всего 30).', {
-          reply_markup: {
-              keyboard: generateServerButtons(30),
-              resize_keyboard: true
-          }
-      });
-      chatStates[chatId] = 'waiting_for_number1';
-  } else if (text === '📃 Раздел форума') {
-      bot.sendMessage(chatId, '🎭 Выберите сервер, форум которого вас интересует (Их всего 30).', {
-          reply_markup: {
-              keyboard: generateServerButtons(30),
-              resize_keyboard: true
-          }
-      });
-      chatStates[chatId] = 'waiting_for_number2';
-  } else if (text === '🖥 Айпи серверов') {
-      bot.sendMessage(chatId, '🎭 Выберите сервер, айпи которого вас интересует', {
-          reply_markup: {
-              keyboard: generateServerButtons(30),
-              resize_keyboard: true
-          }
-      });
-      chatStates[chatId] = 'waiting_for_number3';
-    } else if (text === '🛡 Администрация сервера') {
-        bot.sendMessage(chatId, '🎭 Выберите сервер, список администрации которого вас интересует', {
-            reply_markup: {
-                keyboard: generateServerButtons(30),
-            }
-        });
-        chatStates[chatId] = 'waiting_for_number4';
-    } else if (!commands.includes(text)) {
-      handleServerResponse(chatId, text);
+    // Проверка, что сообщение приходит из личного чата
+    if (msg.chat.type !== 'private') {
+        return; // Игнорируем сообщения из групп
     }
- });
+
+    if (await isUserSubscribed(userId)) {
+        const text = msg.text;
+
+        if (text === '🛠 Сгенерировать никнейм') {
+            const nickname = generateNickname();
+            bot.sendMessage(chatId, `🤖 Ваш никнейм: ${nickname}`);
+        } else if (text === '🔐 Сгенерировать пароль') {
+            const passwordLength = 12;
+            const password = generatePassword(passwordLength);
+            bot.sendMessage(chatId, `🔐 Ваш пароль для любого сервиса, подойдёт и для аризоны: ${password}`);
+        } else if (text === '📡 Дискорд сервер') {
+            bot.sendMessage(chatId, '🎭 Выберите сервер, который вас интересует (Их всего 30).', {
+                reply_markup: {
+                    keyboard: generateServerButtons(31),
+                    resize_keyboard: true
+                }
+            });
+            chatStates[chatId] = 'waiting_for_number1';
+        } else if (text === '📃 Раздел форума') {
+            bot.sendMessage(chatId, '🎭 Выберите сервер, форум которого вас интересует (Их всего 30).', {
+                reply_markup: {
+                    keyboard: generateServerButtons(31),
+                    resize_keyboard: true
+                }
+            });
+            chatStates[chatId] = 'waiting_for_number2';
+        } else if (text === '🖥 Айпи серверов') {
+            bot.sendMessage(chatId, '🎭 Выберите сервер, айпи которого вас интересует', {
+                reply_markup: {
+                    keyboard: generateServerButtons(31),
+                    resize_keyboard: true
+                }
+            });
+            chatStates[chatId] = 'waiting_for_number3';
+        } else if (text === '🛡 Администрация сервера') {
+            bot.sendMessage(chatId, '🎭 Выберите сервер, список администрации которого вас интересует', {
+                reply_markup: {
+                    keyboard: generateServerButtons(31),
+                }
+            });
+            chatStates[chatId] = 'waiting_for_number4';
+        } else if (!commands.includes(text)) {
+            handleServerResponse(chatId, text);
+        }
+    } else {
+        bot.sendMessage(chatId, `Вы должны быть подписаны на канал ${requiredChannelId} для использования этого бота.`);
+    }
+});
+
 
 function generateServerButtons(count) {
   const buttons = [];
@@ -141,7 +155,7 @@ function handleServerResponse(chatId, text) {
         response = responses4[value];
       }
 
-      if (response && value >= 1 && value <= 30) {
+      if (response && value >= 1 && value <= 31) {
           bot.sendMessage(chatId, response);
           delete chatStates[chatId];
           bot.sendMessage(chatId, 'Что бы вы хотели сделать дальше?', {
@@ -158,10 +172,10 @@ function handleServerResponse(chatId, text) {
               }
           });
       } else {
-          bot.sendMessage(chatId, 'Пожалуйста, выберите значение от 1 до 30.');
+          bot.sendMessage(chatId, 'Пожалуйста, выберите значение от 1 до 31.');
       }
   } else {
-      bot.sendMessage(chatId, 'Пожалуйста, введите значение от 1 до 30.');
+      bot.sendMessage(chatId, 'Пожалуйста, введите значение от 1 до 31.');
   }
 }
 
