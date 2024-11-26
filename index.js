@@ -10,8 +10,8 @@ const { responses1, responses2, responses3, responses4 } = require('./responses.
 
 console.log('Bot has been started...')
 
-const firstNames = ["Amaterasu", "Sora", "Emperor", "Hiroshi", "Amethyst", "Playada", "Adaptive", "Rebellious", "Yamato", "Dagon", "Katsu", "Saint", "Chrome", "Manera", "Arata", "Phantom", "Mamora", "Shirou", "Infused", "Jeffrey", "Shadow", "Neri", "Nik", "Kizaru", "Ernesto", "Richard", "Sergio", "Alvaro", "Leonardo", "Marco", "Katana", "Cristopher", "River", "Salvatore", "Kelly", "Britney", "Alessandro", "Francesco", "Ichigo", "Lucas", "Amalion", "Kichiro", "Martin", "Chase", "Lancelot", "James", "Taddeo", "Titled"];
-const lastNames = ["Edge", "Tatsuki", "Cartier", "Explorer", "Blacksimens", "Cult", "Castle", "Bennett", "Cho", "Northside", "Eternal", "Devilside", "Destruction", "Murasaki", "Violence", "Recovery", "Armano", "Takeda", "Soyama", "Hellwalker", "Skywalker", "Wayne", "Hennessy", "Columb", "Laurent", "Fearless", "Williams", "Murphy", "Hayashi", "Nakata", "Cardinal", "Agressive", "Rose", "Quinfrize", ""];
+const firstNames = ["Amaterasu", "Sora", "Emperor", "Hiroshi", "Amethyst", "Playada", "Adaptive", "Rebellious", "Dagon", "Saint", "Chrome", "Manera", "Arata", "Phantom", "Mamora", "Shirou", "Infused", "Jeffrey", "Shadow", "Neri",  "Kizaru", "Marco", "Amalion", "Kichiro", "Everlasting", "Trap",];
+const lastNames = ["Cartier", "Explorer", "Blacksimens", "Cult", "Castle", "Bennett", "Cho", "Northside", "Eternal", "Devilside", "Destruction", "Flame", "Violence", "Recovery", "Armano", "Takeda", "Soyama", "Hellatrigger", "Skywalker", "Hennessy", "Columb", "Laurent", "Hayashi", "Nakata", "Cardinal", "Agressive", "Immortal", "Antisocial", "Antihype", "Unaffected", "Newlight", "Worldwide", "Illuminator"];
 
 async function isUserSubscribed(userId) {
     try {
