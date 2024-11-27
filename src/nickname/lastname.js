@@ -1,0 +1,3 @@
+const lastNames = ["Cartier", "Explorer", "Blacksimens", "Cult", "Castle", "Bennett", "Cho", "Northside", "Eternal", "Devilside", "Destruction", "Flame", "Violence", "Recovery", "Armano", "Takeda", "Soyama", "Hellatrigger", "Skywalker", "Hennessy", "Columb", "Laurent", "Hayashi", "Nakata", "Cardinal", "Agressive", "Immortal", "Antisocial", "Antihype", "Unaffected", "Newlight", "Worldwide", "Illuminator"];
+
+module.exports = { lastNames };
